@@ -21,9 +21,11 @@ class _LogInPageState extends State<LogInPage> {
         padding: const EdgeInsets.only(top: 200,left: 45,right: 45),
         child: ListView(
           children: [
-            Text(
-              'Login',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            Center(
+              child: Text(
+                'Login',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
             ),
             SizedBox(height:15,),
             TextFormField(
@@ -37,6 +39,7 @@ class _LogInPageState extends State<LogInPage> {
             ),
             SizedBox(height: 20,),
             TextFormField(
+              obscureText: true,
               controller: Passwordcontroller,
               decoration: InputDecoration(
                 fillColor: Color(0xffDCE6FF),

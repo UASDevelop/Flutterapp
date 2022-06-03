@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/Screen/DiscoveryPage.dart';
 import 'package:flutterapp/Screen/Profiles_dart.dart';
 
 import 'Home_dart.dart';
@@ -17,7 +18,7 @@ class _BottomNaivgationState extends State<BottomNaivgation> {
   }
 
   final List changevalues=[
-    HoemScreen(),
+    DiscoveryPage(),
     Profiles()
   ];
   int currentindex=0;

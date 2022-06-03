@@ -83,9 +83,6 @@ class _ProfilesState extends State<Profiles> {
              children: [
                Center(
                  child: FlatButton(onPressed: (){
-
-                     uploadimages();
-
                    showChoiceDialog(context);
                  },
                  child: CircleAvatar(

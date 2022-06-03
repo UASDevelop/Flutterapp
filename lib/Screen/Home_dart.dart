@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 import 'Profiles_dart.dart';
 
@@ -16,78 +18,50 @@ class HoemScreen extends StatefulWidget {
 }
 
 class _HoemScreenState extends State<HoemScreen> {
+  StreamSubscription<BluetoothDiscoveryResult>? _streamSubscription;
+  List<BluetoothDiscoveryResult> results =
+  List<BluetoothDiscoveryResult>.empty(growable: true);
+  String? address='';
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    scanDevices();
-    initPlatformState();
+
+    _startDiscovery();
   }
+  void _startDiscovery() {
+    _streamSubscription =
+        FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
+          setState(() {
+            final existingIndex = results.indexWhere(
+                    (element) => element.device.address == r.device.address);
+            if (existingIndex >= 0)
+              results[existingIndex] = r;
+            else
+              results.add(r);
+          });
+        });
 
-  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-  var _deviceData = '';
+    results.forEach((element) {
 
-  Future<void> initPlatformState() async {
-    var deviceData = '';
+      final device = element.device;
+       address = device.name;
 
-    try {
-      if (Platform.isAndroid) {
-        deviceData = _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
-      } else if (Platform.isIOS) {
-        deviceData = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
-      }
-    } on PlatformException {
-      deviceData = 'Failed to get platform version.';
-    }
-
-    if (!mounted) return;
-
-    setState(() {
-      _deviceData = deviceData;
     });
   }
 
-  _readAndroidBuildData(AndroidDeviceInfo build) {
-    return build.product;
-  }
 
-  _readIosDeviceInfo(IosDeviceInfo data) {
-    return data.identifierForVendor;
-  }
-
-  FlutterBlue flutterBlue = FlutterBlue.instance;
-  List devices = [];
-  scanDevices() {
-    // Start scanning
-    flutterBlue.startScan(timeout: Duration(seconds: 4));
-
-// Listen to scan results
-    var subscription = flutterBlue.scanResults.listen((results) {
-      // do something with scan results
-      for (ScanResult r in results) {
-        print(
-            '${r.device.name} found! rssi: ${r.device.name}');
-
-        devices.add(r.device.id.toString());
-      }
-    });
-
-// Stop scanning
-    flutterBlue.stopScan();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_deviceData),
+        title: Text(address!),
       ),
       backgroundColor: Colors.grey.shade100,
       body: Padding(
           padding: const EdgeInsets.only(top: 80, left: 20, right: 20),
-          child: ListView(
-            children: devices.map((e) => Text(e)).toList(),
-          )),
+          child: Text(address.toString())),
     );
   }
 }

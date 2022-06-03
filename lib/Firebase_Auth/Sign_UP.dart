@@ -4,6 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutterapp/Firebase_Auth/LogIn_Page.dart';
 import 'package:flutterapp/Firebase_Auth/Models_Class.dart';
 
@@ -17,11 +18,33 @@ class _SignUpState extends State<SignUp> {
   TextEditingController Passwordcontroller = TextEditingController();
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   var _deviceData = '';
+  String _address = '';
+  String _name = '';
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initPlatformState();
+    Future.doWhile(() async {
+      // Wait if adapter not enabled
+      if ((await FlutterBluetoothSerial.instance.isEnabled) ?? false) {
+        return false;
+      }
+      await Future.delayed(const Duration(milliseconds: 0xDD));
+      return true;
+    }).then((_) {
+      // Update the address field
+      FlutterBluetoothSerial.instance.address.then((address) {
+        setState(() {
+          _address = address!;
+        });
+      });
+      FlutterBluetoothSerial.instance.name.then((name) {
+        setState(() {
+          _name = name!;
+        });
+      });
+    });
   }
 
   Future<void> initPlatformState() async {
@@ -45,7 +68,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   _readAndroidBuildData(AndroidDeviceInfo build) {
-    return build.androidId;
+    return build.device;
   }
 
   _readIosDeviceInfo(IosDeviceInfo data) {
@@ -60,10 +83,14 @@ class _SignUpState extends State<SignUp> {
         padding: const EdgeInsets.only(top: 200, left: 45, right: 45),
         child: Column(
           children: [
-            Text(
-              "Register $_deviceData",
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            Center(
+              child: Text(
+                _name,
+                style:
+                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
             ),
+            Text('$_deviceData'),
             const SizedBox(
               height: 15,
             ),
@@ -80,6 +107,7 @@ class _SignUpState extends State<SignUp> {
               height: 20,
             ),
             TextFormField(
+              obscureText: true,
               controller: Passwordcontroller,
               decoration: const InputDecoration(
                   fillColor: Color(0xffDCE6FF),
@@ -101,8 +129,8 @@ class _SignUpState extends State<SignUp> {
                 onPressed: () {
                   Firebases().SignUp(
                       emailcontroller.text, Passwordcontroller.text, context);
-                  Firebases()
-                      .AddData(emailcontroller.text, Passwordcontroller.text,_deviceData);
+                  Firebases().AddData(emailcontroller.text,
+                      Passwordcontroller.text, _name);
                 },
                 child: const Center(
                     child: Text(

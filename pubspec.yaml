@@ -37,6 +37,7 @@ dependencies:
   nearby_connections:
   path_provider:
   flutter_bluetooth_basic: ^0.1.7
+  flutter_bluetooth_serial: ^0.4.0
   firebase_auth: ^3.3.18
   firebase_core: ^1.17.0
   firebase_storage: ^10.2.16

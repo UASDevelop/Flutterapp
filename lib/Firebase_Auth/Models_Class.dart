@@ -39,7 +39,7 @@ class Firebases {
   void AddData(String email, String password, String deviceid) async {
     var UId = FirebaseAuth.instance.currentUser?.uid;
     FirebaseFirestore _storeage = FirebaseFirestore.instance;
-     await _storeage.collection('User').doc(UId).set({
+     await _storeage.collection('User').add({
       'email': email,
       'uid': UId,
       'deviceId': deviceid,
