@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,7 +38,7 @@ class Firebases {
     }
   }
 
-  void AddData(String email, String password, String deviceid) async {
+  void AddData(String email, String password, String deviceid,) async {
     var UId = FirebaseAuth.instance.currentUser?.uid;
     FirebaseFirestore _storeage = FirebaseFirestore.instance;
      await _storeage.collection('User').add({
@@ -45,4 +47,5 @@ class Firebases {
       'deviceId': deviceid,
     });
   }
+
 }

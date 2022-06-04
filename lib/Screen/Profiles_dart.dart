@@ -17,17 +17,19 @@ class Profiles extends StatefulWidget {
 }
 
 class _ProfilesState extends State<Profiles> {
-  FirebaseStorage storage = FirebaseStorage.instance;
-  void uploadimages(){
-    print('uploatimages');
-   FirebaseStorage.instance.ref(imageFile!.path).child('FILES');
-
-  }
-
   PickedFile? imageFile;
+
+  uploadPic() async {
+    FirebaseStorage _storage = await FirebaseStorage.instance;
+
+    var reference = _storage.ref().child("profile_pictures/");
+
+    var uploadTask = reference.putFile;(cropImag(imageFile!));
+    return uploadTask;
+  }
  cropImag(PickedFile imagefile){
    Future<CroppedFile?> croppedFile = ImageCropper().cropImage(
-     compressFormat: ImageCompressFormat.jpg,
+     compressFormat: ImageCompressFormat.png,
      maxHeight: 30,
      maxWidth: 49,
      compressQuality: 30,
@@ -117,7 +119,6 @@ class _ProfilesState extends State<Profiles> {
                        color: Colors.pink,
                        highlightColor: Colors.grey.shade800,
                        onPressed: () {
-                         uploadimages();
                        },
                        splashColor: Colors.black,
                        child: const Icon(Icons.edit, color: Colors.white,),
